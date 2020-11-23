@@ -4,8 +4,7 @@ import com.example.demo.repository.BroadcastRepository
 import com.example.demo.entity.Broadcast
 import com.example.demo.entity.Response
 import com.example.demo.exception.GloblaExceptionHandler
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-//import org.bson.types.ObjectId
+import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -15,9 +14,9 @@ import kotlin.random.Random
 class BroadcastService (
         private val broadcastRepository: BroadcastRepository
 ) {
-//    fun getById(id : String) : Broadcast {
-//        return broadcastRepository.findOneById(ObjectId(id))
-//    }
+    fun getById(id : String) : Broadcast {
+        return broadcastRepository.findOneById(ObjectId(id))
+    }
     fun getByToken(token: String) : Broadcast {
         try {
             return broadcastRepository.findOneByToken(token)
