@@ -10,10 +10,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.*
 
 @ControllerAdvice
-class GloblaExceptionHandler : ResponseEntityExceptionHandler() {
+class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     class BroadcastNotExist(override val message: String?)
         : Exception(message)
     class BroadcastDataExpired(override val message: String?)
+        : Exception(message)
+    class UnAuthorizedUser(override val message: String?)
         : Exception(message)
     class UserAlreadyReceivedException(override val message: String?)
         : Exception(message)
@@ -24,6 +26,8 @@ class GloblaExceptionHandler : ResponseEntityExceptionHandler() {
     class SplitsExhaustedException(override val message: String?)
         : Exception(message)
     class SplitsExpiredException(override val message: String?)
+        : Exception(message)
+    class TokenDuplicatedException(override val message: String?)
         : Exception(message)
 
     @ExceptionHandler(value = [(BroadcastNotExist::class)])
@@ -40,25 +44,32 @@ class GloblaExceptionHandler : ResponseEntityExceptionHandler() {
         return ResponseEntity(errorDetails, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(value = [(UnAuthorizedUser::class)])
+    fun handleUnAuthorizedUser(ex: UnAuthorizedUser,request: WebRequest)
+            : ResponseEntity<ApiError> {
+        val errorDetails = ApiError(Date(), ex.message!!)
+        return ResponseEntity(errorDetails, HttpStatus.FORBIDDEN)
+    }
+
     @ExceptionHandler(value = [(UserAlreadyReceivedException::class)])
     fun handleUserAlreadyReceived(ex: UserAlreadyReceivedException,request: WebRequest)
             : ResponseEntity<ApiError> {
         val errorDetails = ApiError(Date(), ex.message!!)
-        return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)
+        return ResponseEntity(errorDetails, HttpStatus.FORBIDDEN)
     }
 
     @ExceptionHandler(value = [(OwnerReceiveException::class)])
     fun handleOwnerReceive(ex: OwnerReceiveException,request: WebRequest)
             : ResponseEntity<ApiError> {
         val errorDetails = ApiError(Date(), ex.message!!)
-        return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)
+        return ResponseEntity(errorDetails, HttpStatus.FORBIDDEN)
     }
 
     @ExceptionHandler(value = [(RoomMemberOnlyException::class)])
     fun handleRoomMemberOnly(ex: RoomMemberOnlyException, request: WebRequest)
             : ResponseEntity<ApiError> {
         val errorDetails = ApiError(Date(), ex.message!!)
-        return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)
+        return ResponseEntity(errorDetails, HttpStatus.FORBIDDEN)
     }
 
     @ExceptionHandler(value = [(SplitsExhaustedException::class)])
@@ -73,5 +84,12 @@ class GloblaExceptionHandler : ResponseEntityExceptionHandler() {
             : ResponseEntity<ApiError> {
         val errorDetails = ApiError(Date(), ex.message!!)
         return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [(TokenDuplicatedException::class)])
+    fun handleTokenDuplicated(ex: TokenDuplicatedException, request: WebRequest)
+            : ResponseEntity<ApiError> {
+        val errorDetails = ApiError(Date(), ex.message!!)
+        return ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

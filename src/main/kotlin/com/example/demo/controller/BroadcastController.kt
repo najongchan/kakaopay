@@ -3,22 +3,23 @@ package com.example.demo.controller
 import com.example.demo.entity.Broadcast
 import com.example.demo.entity.BroadcastRequest
 import com.example.demo.entity.Response
+import com.example.demo.exception.GlobalExceptionHandler
 import com.example.demo.service.BroadcastService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import kotlin.random.Random
 
 @RestController
-@RequestMapping("/broadcast", produces = arrayOf("application/json"))
+@RequestMapping("/broadcast", produces = ["application/json"])
 class BroadcastController(
         private val broadcastService: BroadcastService
 ) {
     @GetMapping("/{token}")
-    fun getOneBroadCast(@PathVariable("token") token: String):
+    fun getOneBroadCast(
+            @RequestHeader(value = "X-USER-ID", required = true) user: String,
+            @PathVariable("token") token: String):
             ResponseEntity<Response> {
-        println(token)
-        val response = broadcastService.getBroadcastFilter(token)
-        println(response)
+        val response = broadcastService.getBroadcastFilter(token, user)
+
         return ResponseEntity.ok(response)
     }
 
@@ -28,13 +29,9 @@ class BroadcastController(
             @RequestHeader(value = "X-ROOM-ID", required = true) room: String,
             @RequestBody body: BroadcastRequest
     ): ResponseEntity<String> {
-//        val request = mapOf("total_money" to body.total_money, "targets" to body.targets)
-//        if (!broadcastService.postValidationCheck(request = request)) {
-//            throw Exception("Anyway Exception")
-//        }
-
         val nums = broadcastService.makeSplits(body.total_money, body.targets)
         val token = broadcastService.makeToken()
+
         broadcastService.save(Broadcast(
                 token = token,
                 owner = user,   // 뿌린사람
@@ -63,6 +60,7 @@ class BroadcastController(
         }
 
         val receiveAmount = broadcastService.receiveMoney(broadcast, request)
+
         return ResponseEntity.ok().body(receiveAmount.toString())
     }
 
