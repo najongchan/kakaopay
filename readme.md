@@ -7,13 +7,19 @@
 * MongoDB
 <br>
 ## 구현 기능
-### 1. 뿌리기 API
+1. 뿌리기 API
+```
     `POST` localhost:8080/boradcast
     Content-Type: application/json
-### 2. 받기 API
+```
+2. 받기 API
+```
     `PUT` localhost:8080/boradcast/{token}
-### 3. 조회 API
+```
+3. 조회 API
+```
     `GET` localhost:8080/boradcast/{token}
+```
 <br>
 
 ## 해결 전략
