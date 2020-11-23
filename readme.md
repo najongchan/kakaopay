@@ -1,5 +1,7 @@
 # kakaopay
 2020 kakaopay 과제
+
+https://github.com/najongchan/kakaopay
 <br>
 ## 기술스택
 * Kotlin
